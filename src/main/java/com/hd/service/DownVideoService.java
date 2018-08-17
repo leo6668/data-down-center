@@ -1,8 +1,15 @@
 package com.hd.service;
-import com.hd.mapper.MenuRoleMapper;
+
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.hd.mapper.MenuRoleMapper;
 
 /**
  * Created by sang on 2018/1/2.
@@ -10,14 +17,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class DownVideoService {
-    @Autowired
-    MenuRoleMapper menuRoleMapper;
+	@Autowired
+	MenuRoleMapper menuRoleMapper;
 
-    public int updateMenuRole(Long rid, Long[] mids) {
-        menuRoleMapper.deleteMenuByRid(rid);
-        if (mids.length == 0) {
-            return 0;
-        }
-        return menuRoleMapper.addMenu(rid, mids);
-    }
+	private static void videoDownload(String url, String pathName){
+		try {
+			URL ul = new URL(url);
+			HttpURLConnection conn = (HttpURLConnection) ul.openConnection();
+			BufferedInputStream bi = new BufferedInputStream(conn.getInputStream());
+			FileOutputStream bs = new FileOutputStream(pathName);
+			System.out.println("文件大约：" + (conn.getContentLength() / 1024) + "K");
+			byte[] by = new byte[1024];
+			int len = 0;
+			while ((len = bi.read(by)) != -1) {
+				bs.write(by, 0, len);
+			}
+			bs.close();
+			bi.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		DownVideoService down = new DownVideoService();
+		down.videoDownload("http://www.baidu.com", "D://aa");
+	}
 }
