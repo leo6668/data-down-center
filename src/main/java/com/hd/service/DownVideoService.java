@@ -1,45 +1,33 @@
 package com.hd.service;
-
-import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
-import java.net.HttpURLConnection;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.net.URLConnection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hd.mapper.MenuRoleMapper;
-/**
- * @author admin
- */
 @Service
 @Transactional
 public class DownVideoService {
-	@Autowired
-	MenuRoleMapper menuRoleMapper;
 
-	private static void videoDownload(String url, String pathName){
-		try {
-			URL ul = new URL(url);
-			HttpURLConnection conn = (HttpURLConnection) ul.openConnection();
-			BufferedInputStream bi = new BufferedInputStream(conn.getInputStream());
-			FileOutputStream bs = new FileOutputStream(pathName);
-			System.out.println("文件大约：" + (conn.getContentLength() / 1024) + "K");
-			byte[] by = new byte[1024];
-			int len = 0;
-			while ((len = bi.read(by)) != -1) {
-				bs.write(by, 0, len);
-			}
-			bs.close();
-			bi.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public boolean videoDownload(String linkUrl, String fileName) {
+		 try (FileOutputStream fos = new FileOutputStream("D:/video/20180817/"+fileName)) {
+	            URLConnection connection = new URL(linkUrl).openConnection();
+	            long fileSize = connection.getContentLengthLong();
+	            InputStream inputStream = connection.getInputStream();
+	            byte[] buffer = new byte[10 * 1024 * 1024];
+	            int numberOfBytesRead;
+	            long totalNumberOfBytesRead = 0;
+	            while ((numberOfBytesRead = inputStream.read(buffer)) != - 1) {
+	                fos.write(buffer, 0, numberOfBytesRead);
+	                totalNumberOfBytesRead += numberOfBytesRead;
+	               System.out.println("fileName="+fileName+" 进度："+totalNumberOfBytesRead * 100 / fileSize + "%");
+	            }
+	        } catch (IOException ex) {
+	        }
+		System.out.println("fileName = "+ fileName +" 下载完成。。。");
+		return true;
 	}
-	
-	public static void main(String[] args) {
-		DownVideoService down = new DownVideoService();
-		down.videoDownload("http://www.baidu.com", "D://aa");
-	}
+
 }
