@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hd.mapper.MenuRoleMapper;
-
 /**
- * Created by sang on 2018/1/2.
+ * @author admin
  */
 @Service
 @Transactional

@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+
+import com.hd.service.DownVideoService;
 /**
  * @author leo
  */
@@ -15,6 +17,9 @@ public class BusinessThread {
 	private static Logger logger = LoggerFactory.getLogger(BusinessThread.class);
 	@Autowired
 	private ThreadPoolTaskExecutor pool;
+	
+	@Autowired
+	private DownVideoService downVideoService;
 	
 	private List<Object> downQueue = new ArrayList<Object>();
 
@@ -29,8 +34,6 @@ public class BusinessThread {
 				Thread.sleep(30000);
 				continue;
 			}
-			
-			for (int i = 0; i < downQueue.size(); i++) {
 				pool.execute(new Runnable() {
 					@Override
 					public void run() {
@@ -44,7 +47,6 @@ public class BusinessThread {
 						}
 					}
 				});
-			}
 		}
 	}
 }
