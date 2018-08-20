@@ -34,7 +34,7 @@ public class BusinessThread {
 	private List<Object> downQueue = new ArrayList<Object>();
 
 	@PostConstruct
-	private void downTask() throws InterruptedException {
+	private void downVideoTask() throws InterruptedException {
 		List<VideoSource> queryVideo = this.queryVideo(videoSourceMapper);
 		for (VideoSource videoSource : queryVideo) {
 			int indexOf = videoSource.getLinkUrl().indexOf(".mp4");
@@ -45,11 +45,32 @@ public class BusinessThread {
 					try {
 						downVideoService.videoDownload(videoSource.getLinkUrl(),fileName);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			});
+		}
+	}
+	
+	@PostConstruct
+	private void downImageTask() throws InterruptedException {
+		List<VideoSource> queryVideo = this.queryVideo(videoSourceMapper);
+		for (VideoSource videoSource : queryVideo) {
+			for (int i = 1; i <= 10; i++) {
+				int indexOf = videoSource.getLinkUrl().indexOf(".mp4");
+				String fileName = videoSource.getLinkUrl().substring(indexOf-4, indexOf)+i+".jpg";
+				String imageUrl = videoSource.getImageUrl()+i+".jpg";
+				pool.execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							downVideoService.videoDownload(imageUrl,fileName);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
 		}
 	}
 	
