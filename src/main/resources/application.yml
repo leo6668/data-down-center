@@ -18,14 +18,14 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/capture-center?useUnicode=true&characterEncoding=UTF-8
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
-    password: 123456
+    password: root
 
   mybatis:
     mapper-locations: classpath:/mybatis-config.xml
 
 threadpool:
-  core-pool-size: 30
-  max-pool-size: 75
+  core-pool-size: 5
+  max-pool-size: 10
   queue-capacity: 1000
   keep-alive-seconds: 300
 
