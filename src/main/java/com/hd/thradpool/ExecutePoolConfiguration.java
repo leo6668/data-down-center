@@ -1,4 +1,5 @@
 package com.hd.thradpool;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Configuration
 @ConfigurationProperties(prefix="threadpool")
 @Component
+@Data
 public class ExecutePoolConfiguration{
 	@Value("${threadpool.core-pool-size}")
 	private int corePoolSize;
