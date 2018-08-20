@@ -1,39 +1,37 @@
 package com.hd.service;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.hd.HdserverApplication;
+import com.hd.bean.VideoSource;
+import com.hd.mapper.VideoSourceMapper;
+import com.hd.utils.DownUtils;
 
 @Service
 @Transactional
 public class DownVideoService {
 	private static Logger logger = LoggerFactory.getLogger(DownVideoService.class);
-	public boolean videoDownload(String linkUrl, String fileName) {
-		 try (FileOutputStream fos = new FileOutputStream("D:/video/20180817/"+fileName)) {
-			 	logger.info("图片下载地址："+linkUrl);
-	            URLConnection connection = new URL(linkUrl).openConnection();
-	            long fileSize = connection.getContentLengthLong();
-	            InputStream inputStream = connection.getInputStream();
-	            byte[] buffer = new byte[10 * 1024 * 1024];
-	            int numberOfBytesRead;
-	            long totalNumberOfBytesRead = 0;
-	            while ((numberOfBytesRead = inputStream.read(buffer)) != - 1) {
-	                fos.write(buffer, 0, numberOfBytesRead);
-	                totalNumberOfBytesRead += numberOfBytesRead;
-	               System.out.println("fileName="+fileName+" 进度："+totalNumberOfBytesRead * 100 / fileSize + "%");
-	            }
-	        } catch (IOException ex) {
-	        }
-		System.out.println("fileName = "+ fileName +" 下载完成。。。");
-		return true;
+	
+	private VideoSourceMapper videoSourceMapper;
+	
+	public DownVideoService(VideoSourceMapper videoSourceMapper) {
+		super();
+		this.videoSourceMapper = videoSourceMapper;
 	}
 
+	public boolean videoDownload(VideoSource videoSource,String fileName,VideoSourceMapper videoSourceMapper){
+		logger.info("开始下载文件,{},>>>>>>>",fileName);
+		String videoUrl = videoSource.getLinkUrl();
+		long startTime = System.currentTimeMillis();
+		boolean videoDownload = DownUtils.videoDownload(videoUrl, fileName);
+		long endTime = System.currentTimeMillis();
+		logger.info("文件下载完成,{},耗时：{},>>>>>>>",fileName,(endTime-startTime));
+		if(videoDownload){
+			videoSource.setDownStatus(2);
+			logger.info("开始更新文件状态：fileName={},为下载成功！",fileName);
+			videoSourceMapper.updateByPrimaryKey(videoSource);
+			logger.info("更新文件状态：fileName={},成功！",fileName);
+		}
+		return videoDownload;
+	}
 }
