@@ -15,7 +15,7 @@ public class DownUtils {
 	private static Logger logger = LoggerFactory.getLogger(DownUtils.class);
 	
 	public static boolean videoDownload(String linkUrl, String fileName) {
-		 try (FileOutputStream fos = new FileOutputStream("D:/video/20180817/"+fileName)) {
+		 try (FileOutputStream fos = new FileOutputStream(fileName)) {
 	            URLConnection connection = new URL(linkUrl).openConnection();
 	            long fileSize = connection.getContentLengthLong();
 	            InputStream inputStream = connection.getInputStream();
@@ -23,6 +23,10 @@ public class DownUtils {
 	            int numberOfBytesRead;
 	            long totalNumberOfBytesRead = 0;
 	            long cacheSchedule = 0;
+	            if(fileSize <= 0){
+	            	logger.info("文件名称：{},文件大小:{}kb,本次不进行下载......",fileName,fileSize/(1024));
+	            	return false;
+	            }
 	            while ((numberOfBytesRead = inputStream.read(buffer)) != - 1) {
 	                fos.write(buffer, 0, numberOfBytesRead);
 	                totalNumberOfBytesRead += numberOfBytesRead;

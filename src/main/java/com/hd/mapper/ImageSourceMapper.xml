@@ -221,7 +221,7 @@
   </select>
   
   <update id='updateImageStatus' parameterType="com.hd.bean.ImageSource">
-   update image_source set image_status = #{imageStatus,jdbcType=VARCHAR} 
+   update image_source set image_status = #{imageStatus,jdbcType=VARCHAR},local_image_path= #{localImagePath,jdbcType=VARCHAR} 
   	where local_image_id = #{localImageId,jdbcType=VARCHAR}  and image_id= #{imageId,jdbcType=VARCHAR} 
   </update>
   
